@@ -1,4 +1,4 @@
-import docker, time, requests, json, socket, os, sys, logging
+import docker, time, requests, json, socket, os, sys, logging, psutil
 
 dockerUrl = os.getenv('DOCKER_URL', "unix://var/run/docker.sock")
 
@@ -68,6 +68,16 @@ endpoints = {
     },
 }
 
+def getIpFromInterface(interface: str) -> str:
+    s = psutil.net_if_addrs()
+    if interface not in s:
+        return None
+    for i in s[interface]:
+        # Find first non-loopback ipv4 address
+        if i.family == socket.AddressFamily.AF_INET and i.address != '127.0.0.1':
+            return i.address
+    return None
+
 def ipTest(ip):
   is_ip = False
   try:
@@ -77,7 +87,12 @@ def ipTest(ip):
     template = "An exception of type {0} occurred. Arguments:\n{1!r}"
     message = template.format(type(ex).__name__, ex.args)
     logger.debug(message)
-
+  if not is_ip:
+    ip_or_none = getIpFromInterface(ip)
+    if ip_or_none:
+      logger.info("Using interface %s for %s" %(ip, ip_or_none))
+      ip = ip_or_none
+      is_ip = True
   return is_ip, ip
 
 def flushList():
