@@ -87,12 +87,6 @@ def ipTest(ip):
     template = "An exception of type {0} occurred. Arguments:\n{1!r}"
     message = template.format(type(ex).__name__, ex.args)
     logger.debug(message)
-  if not is_ip:
-    ip_or_none = getIpFromInterface(ip)
-    if ip_or_none:
-      logger.info("Using interface %s for %s" %(ip, ip_or_none))
-      ip = ip_or_none
-      is_ip = True
   return is_ip, ip
 
 def flushList():
@@ -356,6 +350,10 @@ if __name__ == "__main__":
           customRecords = json.loads(customRecordsLabel)
           for cr in customRecords:
             tup = tuple(cr)
+            ip_or_none = getIpFromInterface(tup[1])
+            if ip_or_none:
+              logger.info("Using interface %s for %s" %(tup[1], ip_or_none))
+              tup = (tup[0], ip_or_none)
             newGlobalList.add(tup)
             # Track last seen for currently labeled items
             globalLastSeen[tup] = int(time.time())
