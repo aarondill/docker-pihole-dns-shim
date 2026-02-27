@@ -353,10 +353,12 @@ if __name__ == "__main__":
             if tup[1].startswith("iface:"):
               iface = tup[1].removeprefix("iface:")
               ip = getIpFromInterface(iface)
+              # If the interface doesn't exist, skip it
               if ip:
                 logger.info("Using interface %s for %s" %(iface, ip))
-                tup = (tup[0], ip)
-            newGlobalList.add(tup)
+                newGlobalList.add((tup[0], ip))
+            else:
+                newGlobalList.add(tup)
             # Track last seen for currently labeled items
             globalLastSeen[tup] = int(time.time())
 
