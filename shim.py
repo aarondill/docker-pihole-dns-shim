@@ -350,10 +350,12 @@ if __name__ == "__main__":
           customRecords = json.loads(customRecordsLabel)
           for cr in customRecords:
             tup = tuple(cr)
-            ip_or_none = getIpFromInterface(tup[1])
-            if ip_or_none:
-              logger.info("Using interface %s for %s" %(tup[1], ip_or_none))
-              tup = (tup[0], ip_or_none)
+            if tup[1].startswith("iface:"):
+              iface = tup[1].removeprefix("iface:")
+              ip = getIpFromInterface(iface)
+              if ip:
+                logger.info("Using interface %s for %s" %(iface, ip))
+                tup = (tup[0], ip)
             newGlobalList.add(tup)
             # Track last seen for currently labeled items
             globalLastSeen[tup] = int(time.time())
