@@ -378,14 +378,14 @@ if __name__ == "__main__":
                 ip = getIpFromInterface(iface)
                 # If the interface doesn't exist, skip it
                 if ip:
-                  logger.info("Using interface %s for %s" %(iface, ip))
+                  logger.debug("Using interface %s for %s" %(iface, ip))
                   newGlobalList.add((tup[0], ip))
               else:
                   newGlobalList.add(tup)
               # Track last seen for currently labeled items
               globalLastSeen[tup] = int(time.time())
         handleList(newGlobalList, existingRecords)
-        logger.info("Sleeping for %s" %(intervalSeconds))
+        logger.debug("Sleeping for %s" %(intervalSeconds))
         time.sleep(intervalSeconds)
     except InterruptException:
       logger.info("Interrupted, exiting")
